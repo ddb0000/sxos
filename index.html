@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SXOS</title>
+<link rel="stylesheet" href="https://unpkg.com/xterm/css/xterm.css"/>
+<style>
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #000;
+  color: #0f0;
+  font-family: monospace;
+  font-size: 16px;
+}
+#terminal-container {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+.xterm-viewport {
+  overflow-y: hidden !important;
+}
+</style>
+</head>
+<body>
+<div id="terminal-container"></div>
+<textarea id="input-field" style="display:none;"></textarea>
+<script src="https://unpkg.com/xterm/lib/xterm.js"></script>
+<script>
+const t = new Terminal({
+  scrollback: 0,
+  disableStdin: false,
+  theme: {
+    background: '#000'
+  }
+});
+const commands = {
+  'joke': () => t.writeln('Why do programmers prefer dark mode? Because light attracts bugs.'),
+  'info': () => t.writeln('System info: SXOS V0.3.2 Nightly Pumpkin'),
+  'help': () => {
+    t.writeln('Available commands:');
+    t.writeln('  joke - tells a joke');
+    t.writeln('  info - displays system info');
+    t.writeln('  help - shows this help message');
+  }
+};
+t.open(document.getElementById('terminal-container'));
+document.querySelector('.xterm-viewport').style.overflowY = 'hidden';
+t.writeln('SXOS V0.3.2 Nightly Pumpkin. Type "help" for a list of commands.');
+t.prompt = '\x1B[32m$ \x1B[0m';
+t.write(t.prompt);
+
+t.onKey(e => {
+  const n = e.domEvent, input = document.getElementById('input-field');
+  if (n.keyCode === 13) {
+    t.writeln('');
+    const cmd = input.value.trim();
+    if (commands[cmd]) {
+      commands[cmd]();
+    } else {
+      t.writeln('Command not found: ' + cmd);
+    }
+    t.write(t.prompt);
+    input.value = '';
+  } else if (n.keyCode === 8) {
+    if (input.value.length > 0) {
+      t.write('\b \b');
+    }
+    input.value = input.value.slice(0, -1);
+  } else if (!n.altKey && !n.ctrlKey && !n.metaKey) {
+    t.write(e.key);
+    input.value += e.key;
+  }
+})
+</script>
+</body>
+</html>
