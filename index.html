@@ -43,9 +43,9 @@ const commands = {
   'info': () => t.writeln('System info: SXOS V0.3.2 Nightly Pumpkin'),
   'help': () => {
     t.writeln('Available commands:');
-    t.writeln('  joke - tells a joke');
-    t.writeln('  info - displays system info');
-    t.writeln('  help - shows this help message');
+    Object.keys(commands).forEach(command => {
+    t.writeln(`  ${command}`);
+    });
   }
 };
 
